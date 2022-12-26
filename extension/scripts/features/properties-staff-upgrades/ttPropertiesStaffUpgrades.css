@@ -1,0 +1,11 @@
+.tt-property-staff-upgades {
+	position: relative;
+	top: -3px;
+	padding-left: 10px;
+	float: none;
+	color: var(--tt-color-item-text);
+}
+.tt-total-happiness {
+    font-weight: bold;
+	color: var(--tt-color-item-text);
+}
