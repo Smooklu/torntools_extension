@@ -5,16 +5,17 @@
 	const feature = featureManager.registerFeature(
 		"Property Staff Upgrades Happiness Values",
 		"property",
-		() => settings.apiUsage.user.properties && settings.pages.property.happy,
+		() => settings.pages.property.happyUpgrades,
+        initialiseListener,
 		appendHappinessValues,
-        appendHappinessTotal,
+        cleanUpHappinessValues,
 		{
-			storage: ["settings.apiUsage.user.properties", "settings.pages.property.happy"],
+			storage: ["settings.pages.property.happyUpgrades"],
 		},
 		null
 	);
 
-    staffUpgrades = {
+    upgrades = {
         "None": 0,
         "Maid service" : 50,
         "2x Maid service" : 75,
@@ -35,6 +36,15 @@
     const menuElements = document.getElementsByClassName('ui-selectmenu-menu');
     const totalCostDiv = document.getElementsByClassName('confirm-msg p10');
 
+    function initialiseListener() {
+		new MutationObserver(() => {
+			if (feature.enabled()) appendHappinessValues();
+		}).observe(document.find("ui-selectmenu-menu'"), { childList: true });
+	}
+    function addTotalToButton(){
+        document.getElementsByClassName('update btn-wrap silver')[0].children[0].children[0].addEventListener("click", appendHappinessTotal)
+    }
+
 	function appendHappinessValues() {
         for (const menuElement of menuElements) {
             const menuElementOptions = menuElement.children[0].children
@@ -43,6 +53,7 @@
                 options.innerText += ` ${staffUpgrades[upgrade]}H`
             }
           }
+        addTotalToButton();
     }
     function getHappinessTotal(){
         let happinessTotal = 0;
@@ -52,7 +63,7 @@
                 if (options.className == "ui-selectmenu-item-selected") {
                     let upgrade = options.innerText.split(" (")[0]
                     happinessTotal = happinessTotal + staffUpgrades[upgrade]
-                    console.log(`Adding happiness from staff upgade to total! Total: ${happinessTotal}`)
+                    console.log(`Adding happiness from upgrades to total! Total: ${happinessTotal}`)
                 }
             }
         }
@@ -70,6 +81,10 @@
                 document.getElementsByClassName('tt-total-happiness')[0].innerText = `Total Happiness from Staff Upgrades: ${happinessTotal}`;
         }
         })
+    }
+    function cleanUpHappinessValues() {
+        document.findAll(".tt-modified").forEach((x) => x.remove());
+        document.findAll(".tt-total-happiness").forEach((x) => x.remove());
     }
 		
 })();
